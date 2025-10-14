@@ -1,174 +1,152 @@
-CREATE DATABASE ForoCine;
+-- 1. CREACIÓN Y USO DE LA BASE DE DATOS
+
+DROP DATABASE IF EXISTS ForoCine;
+CREATE DATABASE ForoCine
+    DEFAULT CHARACTER SET utf8mb4
+    DEFAULT COLLATE utf8mb4_general_ci;
 USE ForoCine;
 
-DEFAULT CHARACTER SET=utf8mb4;
-DEFAULT COLLATE=utf8mb4_general_ci;
+-- 2. CREACIÓN DE TABLAS
 
--- Creación de la tabla PERSONA
--- Esta es la tabla principal para actores, guionistas y directores.
+-- Tabla principal para almacenar datos de personas (actores, directores, guionistas)
 CREATE TABLE PERSONA (
-    id_persona VARCHAR(36) PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    fecha_nacimiento DATE,
-    nacionalidad VARCHAR(50)
+    id_persona INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(150) NOT NULL
 );
 
--- Creación de la tabla ACTOR
--- Se relaciona con PERSONA (relación 1:1)
+-- Tabla Actores (hereda de PERSONA)
 CREATE TABLE ACTOR (
-    id_actor VARCHAR(36) PRIMARY KEY,
-    id_persona VARCHAR(36) UNIQUE,
-    CONSTRAINT FK_Actor_Persona FOREIGN KEY (id_persona) REFERENCES PERSONA(id_persona)
+    id_actor INT PRIMARY KEY,
+    CONSTRAINT FK_Actor_Persona FOREIGN KEY (id_actor) REFERENCES PERSONA(id_persona) ON DELETE CASCADE
 );
 
--- Creación de la tabla GUIONISTA
--- Se relaciona con PERSONA (relación 1:1)
+-- Tabla Guionistas (hereda de PERSONA)
 CREATE TABLE GUIONISTA (
-    id_guionista VARCHAR(36) PRIMARY KEY,
-    id_persona VARCHAR(36) UNIQUE,
-    CONSTRAINT FK_Guionista_Persona FOREIGN KEY (id_persona) REFERENCES PERSONA(id_persona)
+    id_guionista INT PRIMARY KEY,
+    CONSTRAINT FK_Guionista_Persona FOREIGN KEY (id_guionista) REFERENCES PERSONA(id_persona) ON DELETE CASCADE
 );
 
--- Creación de la tabla DIRECTOR
--- Se relaciona con PERSONA (relación 1:1)
+-- Tabla Directores (hereda de PERSONA)
 CREATE TABLE DIRECTOR (
-    id_director VARCHAR(36) PRIMARY KEY,
-    id_persona VARCHAR(36) UNIQUE,
-    CONSTRAINT FK_Director_Persona FOREIGN KEY (id_persona) REFERENCES PERSONA(id_persona)
+    id_director INT PRIMARY KEY,
+    CONSTRAINT FK_Director_Persona FOREIGN KEY (id_director) REFERENCES PERSONA(id_persona) ON DELETE CASCADE
 );
 
--- Creación de la tabla PELICULA
+-- Tabla Películas
 CREATE TABLE PELICULA (
-    id_pelicula VARCHAR(36) PRIMARY KEY,
+    id_pelicula INT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(255) NOT NULL,
-    año INT,
-    duracion INT
+    ano_estreno INT,
+    duracion_min INT,
+    pais VARCHAR(50),
+    valoracion_media DECIMAL(4, 2) DEFAULT 0.00 -- Requerido para actualizar y consultar la media
 );
 
--- Creación de la tabla GENERO
--- Un catálogo de géneros de películas
-CREATE TABLE GENERO (
-    id_genero VARCHAR(36) PRIMARY KEY,
-    nombre VARCHAR(50) UNIQUE NOT NULL
+-- Tabla para los Superhéroes y su identidad humana
+CREATE TABLE SUPERHEROE (
+    id_superheroe INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_heroe VARCHAR(100) NOT NULL,
+    identidad_humana VARCHAR(100)
 );
 
--- Tabla de relación PELICULA_GENERO (muchos a muchos)
--- Una película puede tener varios géneros, y un género puede aplicarse a varias películas.
-CREATE TABLE PELICULA_GENERO (
-    id_pelicula VARCHAR(36),
-    id_genero VARCHAR(36),
-    PRIMARY KEY (id_pelicula, id_genero),
-    CONSTRAINT FK_PeliculaGenero_Pelicula FOREIGN KEY (id_pelicula) REFERENCES PELICULA(id_pelicula),
-    CONSTRAINT FK_PeliculaGenero_Genero FOREIGN KEY (id_genero) REFERENCES GENERO(id_genero)
+-- Tabla para los Grupos de superhéroes
+CREATE TABLE GRUPO (
+    id_grupo INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_grupo VARCHAR(100) NOT NULL
 );
 
--- Creación de la tabla PERSONAJE
-CREATE TABLE PERSONAJE (
-    id_personaje VARCHAR(36) PRIMARY KEY,
-    nombre_personaje VARCHAR(100) NOT NULL,
-    descripcion TEXT
-);
-
--- Tabla de relación PELICULA_PERSONAJE (muchos a muchos)
--- Un personaje puede aparecer en varias películas
-CREATE TABLE PELICULA_PERSONAJE (
-    id_pelicula VARCHAR(36),
-    id_personaje VARCHAR(36),
-    PRIMARY KEY (id_pelicula, id_personaje),
-    CONSTRAINT FK_PeliculaPersonaje_Pelicula FOREIGN KEY (id_pelicula) REFERENCES PELICULA(id_pelicula),
-    CONSTRAINT FK_PeliculaPersonaje_Personaje FOREIGN KEY (id_personaje) REFERENCES PERSONAJE(id_personaje)
-);
-
--- Creación de la tabla GUIO
--- Relación entre guionistas y películas (muchos a muchos)
-CREATE TABLE GUIO (
-    id_guionista VARCHAR(36),
-    id_pelicula VARCHAR(36),
-    PRIMARY KEY (id_guionista, id_pelicula),
-    CONSTRAINT FK_Guio_Guionista FOREIGN KEY (id_guionista) REFERENCES GUIONISTA(id_guionista),
-    CONSTRAINT FK_Guio_Pelicula FOREIGN KEY (id_pelicula) REFERENCES PELICULA(id_pelicula)
-);
-
--- Creación de la tabla DIRECCION
--- Relación entre directores y películas (muchos a muchos)
-CREATE TABLE DIRECCION (
-    id_director VARCHAR(36),
-    id_pelicula VARCHAR(36),
-    PRIMARY KEY (id_director, id_pelicula),
-    CONSTRAINT FK_Direccion_Director FOREIGN KEY (id_director) REFERENCES DIRECTOR(id_director),
-    CONSTRAINT FK_Direccion_Pelicula FOREIGN KEY (id_pelicula) REFERENCES PELICULA(id_pelicula)
-);
-
--- Creación de la tabla ACTUACION
--- Relación entre actores, personajes y películas (muchos a muchos)
-CREATE TABLE ACTUACION (
-    id_actor VARCHAR(36),
-    id_personaje VARCHAR(36),
-    id_pelicula VARCHAR(36),
-    PRIMARY KEY (id_actor, id_personaje, id_pelicula),
-    CONSTRAINT FK_Actuacion_Actor FOREIGN KEY (id_actor) REFERENCES ACTOR(id_actor),
-    CONSTRAINT FK_Actuacion_Personaje FOREIGN KEY (id_personaje) REFERENCES PERSONAJE(id_personaje),
-    CONSTRAINT FK_Actuacion_Pelicula FOREIGN KEY (id_pelicula) REFERENCES PELICULA(id_pelicula)
-);
-
--- Creación de la tabla PLATAFORMA
+-- Tabla para las Plataformas de streaming
 CREATE TABLE PLATAFORMA (
-    id_plataforma VARCHAR(36) PRIMARY KEY,
+    id_plataforma INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL
 );
 
--- Creación de la tabla DISPONIBILIDAD
--- Relaciona películas con plataformas (muchos a muchos)
-CREATE TABLE DISPONIBILIDAD (
-    id_disponibilidad VARCHAR(36) PRIMARY KEY,
-    id_pelicula VARCHAR(36),
-    id_plataforma VARCHAR(36),
-    fecha_inicio DATE,
-    fecha_fin DATE,
-    CONSTRAINT FK_Disponibilidad_Pelicula FOREIGN KEY (id_pelicula) REFERENCES PELICULA(id_pelicula),
-    CONSTRAINT FK_Disponibilidad_Plataforma FOREIGN KEY (id_plataforma) REFERENCES PLATAFORMA(id_plataforma)
-);
-
--- Creación de la tabla PRECIO
-CREATE TABLE PRECIO (
-    id_precio VARCHAR(36) PRIMARY KEY,
-    id_disponibilidad VARCHAR(36),
-    valor DECIMAL(10, 2) NOT NULL,
-    fecha_vigencia DATE,
-    CONSTRAINT FK_Precio_Disponibilidad FOREIGN KEY (id_disponibilidad) REFERENCES DISPONIBILIDAD(id_disponibilidad)
-);
-
--- Creación de la tabla VALORACION
-CREATE TABLE VALORACION (
-    id_valoracion VARCHAR(36) PRIMARY KEY,
-    id_pelicula VARCHAR(36),
-    puntuacion INT CHECK (puntuacion >= 1 AND puntuacion <= 10),
-    fecha DATE,
-    CONSTRAINT FK_Valoracion_Pelicula FOREIGN KEY (id_pelicula) REFERENCES PELICULA(id_pelicula)
-);
-
--- Creación de la tabla COMENTARIO
-CREATE TABLE COMENTARIO (
-    id_comentario VARCHAR(36) PRIMARY KEY,
-    id_valoracion VARCHAR(36),
-    texto TEXT,
-    CONSTRAINT FK_Comentario_Valoracion FOREIGN KEY (id_valoracion) REFERENCES VALORACION(id_valoracion)
-);
-
--- Creación de la tabla SEGUIDOR
--- Representa a un usuario que sigue un tema o contenido
+-- Tabla para los Seguidores (usuarios de la web)
 CREATE TABLE SEGUIDOR (
-    id_seguidor VARCHAR(36) PRIMARY KEY,
-    nombre_usuario VARCHAR(100) UNIQUE NOT NULL,
-    email VARCHAR(255) UNIQUE
+    email VARCHAR(255) PRIMARY KEY, 
+    password_hash VARCHAR(255) NOT NULL -- Almacena el hash de la contraseña
 );
 
--- Tabla de relación SEGUIDOR_PELICULA (muchos a muchos)
--- Un seguidor puede seguir varias películas
-CREATE TABLE SEGUIDOR_PELICULA (
-    id_seguidor VARCHAR(36),
-    id_pelicula VARCHAR(36),
-    PRIMARY KEY (id_seguidor, id_pelicula),
-    CONSTRAINT FK_SeguidorPelicula_Seguidor FOREIGN KEY (id_seguidor) REFERENCES SEGUIDOR(id_seguidor),
-    CONSTRAINT FK_SeguidorPelicula_Pelicula FOREIGN KEY (id_pelicula) REFERENCES PELICULA(id_pelicula)
+
+-- 3. CREACIÓN DE TABLAS DE RELACIÓN 
+
+-- Relaciona Películas con sus Directores
+CREATE TABLE PELICULA_DIRECTOR (
+    id_pelicula INT,
+    id_director INT,
+    PRIMARY KEY (id_pelicula, id_director),
+    CONSTRAINT FK_PD_Pelicula FOREIGN KEY (id_pelicula) REFERENCES PELICULA(id_pelicula) ON DELETE CASCADE,
+    CONSTRAINT FK_PD_Director FOREIGN KEY (id_director) REFERENCES DIRECTOR(id_director) ON DELETE CASCADE
 );
+
+-- Relaciona Películas con sus Guionistas
+CREATE TABLE PELICULA_GUIONISTA (
+    id_pelicula INT,
+    id_guionista INT,
+    PRIMARY KEY (id_pelicula, id_guionista),
+    CONSTRAINT FK_PG_Pelicula FOREIGN KEY (id_pelicula) REFERENCES PELICULA(id_pelicula) ON DELETE CASCADE,
+    CONSTRAINT FK_PG_Guionista FOREIGN KEY (id_guionista) REFERENCES GUIONISTA(id_guionista) ON DELETE CASCADE
+);
+
+-- Tabla de INTERPRETACIÓN: relaciona al Actor, con la Película y el Superhéroe que interpreta
+CREATE TABLE INTERPRETACION (
+    id_pelicula INT,
+    id_actor INT,
+    id_superheroe INT,
+    PRIMARY KEY (id_pelicula, id_actor, id_superheroe),
+    CONSTRAINT FK_Interpretacion_Pelicula FOREIGN KEY (id_pelicula) REFERENCES PELICULA(id_pelicula) ON DELETE CASCADE,
+    CONSTRAINT FK_Interpretacion_Actor FOREIGN KEY (id_actor) REFERENCES ACTOR(id_actor) ON DELETE CASCADE,
+    CONSTRAINT FK_Interpretacion_Superheroe FOREIGN KEY (id_superheroe) REFERENCES SUPERHEROE(id_superheroe) ON DELETE CASCADE
+);
+
+-- Relaciona qué superhéroes aparecen en qué grupo para una película determinada
+CREATE TABLE PERTENENCIA_GRUPO (
+    id_pelicula INT,
+    id_superheroe INT,
+    id_grupo INT,
+    PRIMARY KEY (id_pelicula, id_superheroe, id_grupo),
+    CONSTRAINT FK_PGrupo_Pelicula FOREIGN KEY (id_pelicula) REFERENCES PELICULA(id_pelicula) ON DELETE CASCADE,
+    CONSTRAINT FK_PGrupo_Superheroe FOREIGN KEY (id_superheroe) REFERENCES SUPERHEROE(id_superheroe) ON DELETE CASCADE,
+    CONSTRAINT FK_PGrupo_Grupo FOREIGN KEY (id_grupo) REFERENCES GRUPO(id_grupo) ON DELETE CASCADE
+);
+
+-- Indica en qué plataformas está disponible una película, cuándo y a qué precio
+CREATE TABLE DISPONIBILIDAD (
+    id_disponibilidad INT AUTO_INCREMENT PRIMARY KEY,
+    id_pelicula INT NOT NULL,
+    id_plataforma INT NOT NULL,
+    fecha_inicio DATE,
+    fecha_fin DATE, -- Requerido para la regla de borrado (3 años sin plataforma)
+    es_alquiler BOOLEAN DEFAULT FALSE, -- Requerido para saber si es alquiler
+    coste_alquiler DECIMAL(5, 2), -- Requerido para el coste de alquiler
+    CONSTRAINT FK_Disponibilidad_Pelicula FOREIGN KEY (id_pelicula) REFERENCES PELICULA(id_pelicula) ON DELETE CASCADE,
+    CONSTRAINT FK_Disponibilidad_Plataforma FOREIGN KEY (id_plataforma) REFERENCES PLATAFORMA(id_plataforma) ON DELETE CASCADE
+);
+
+-- Almacena las votaciones de los seguidores a las películas
+CREATE TABLE VALORACION (
+    seguidor_email VARCHAR(255),
+    id_pelicula INT,
+    puntuacion INT NOT NULL CHECK (puntuacion >= 0 AND puntuacion <= 10), -- Rango 0-10
+    PRIMARY KEY (seguidor_email, id_pelicula), -- Un seguidor solo puede votar una vez por película
+    CONSTRAINT FK_Valoracion_Seguidor FOREIGN KEY (seguidor_email) REFERENCES SEGUIDOR(email) ON DELETE CASCADE,
+    CONSTRAINT FK_Valoracion_Pelicula FOREIGN KEY (id_pelicula) REFERENCES PELICULA(id_pelicula) ON DELETE CASCADE
+);
+
+-- Almacena los comentarios de los seguidores a las películas
+CREATE TABLE COMENTARIO (
+    id_comentario INT AUTO_INCREMENT PRIMARY KEY,
+    seguidor_email VARCHAR(255) NOT NULL,
+    id_pelicula INT NOT NULL,
+    texto TEXT,
+    fecha_comentario TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Requerido para la regla de borrado (5 años sin comentario)
+    CONSTRAINT FK_Comentario_Seguidor FOREIGN KEY (seguidor_email) REFERENCES SEGUIDOR(email) ON DELETE CASCADE,
+    CONSTRAINT FK_Comentario_Pelicula FOREIGN KEY (id_pelicula) REFERENCES PELICULA(id_pelicula) ON DELETE CASCADE
+);
+
+
+-- 4. CREACIÓN DE USUARIO Y ASIGNACIÓN DE PERMISOS
+
+CREATE USER 'admin_forocine'@'localhost' IDENTIFIED BY 'password123';
+GRANT ALL PRIVILEGES ON ForoCine.* TO 'admin_forocine'@'localhost';
+FLUSH PRIVILEGES;
