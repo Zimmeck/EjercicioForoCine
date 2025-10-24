@@ -137,7 +137,9 @@ CREATE TABLE PERSONAJE_GRUPO (
     FOREIGN KEY (id_grupo) REFERENCES GRUPO (id_grupo) ON DELETE CASCADE
 );
 
--- 4. CREACIÓN DE USUARIO
+-- Creación de usuario de base de datos
+DROP USER IF EXISTS 'admin_forocine_limpio' @'localhost';
+
 CREATE USER 'admin_forocine_limpio' @'localhost' IDENTIFIED BY 'password123';
 
 GRANT ALL PRIVILEGES ON ForoCine_Limpio.* TO 'admin_forocine_limpio' @'localhost';
