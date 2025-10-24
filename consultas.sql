@@ -85,9 +85,8 @@ FROM
     JOIN PELICULA_PERSONAJE pp ON p.id_pelicula = pp.id_pelicula
     JOIN PERSONAJE pj ON pp.id_personaje = pj.id_personaje
 WHERE
-    p.titulo = 'Staff.' -- <<-- FILTRO 1: Introduce el título de la película
+    p.titulo = 'Staff.' 
     AND pj.nombre_personaje = 'Doctor Strange';
--- <<-- FILTRO 2: Introduce el nombre del superhéroe
 
 -- 6. Encontrar todos los actores que han interpretado al superhéroe 'Spider-Man'
 SELECT p.nombre_personaje AS Superheroe, a.nombre AS Nombre_Actor
@@ -96,7 +95,6 @@ FROM
     JOIN ACTOR_PERSONAJE ap ON p.id_personaje = ap.id_personaje
     JOIN ACTOR a ON ap.idActor = a.idActor
 WHERE
-    -- Filtra por el nombre específico del personaje
     p.nombre_personaje = 'Spider-Man'
 ORDER BY a.nombre;
 
@@ -110,17 +108,14 @@ FROM PLATAFORMA pl
         FROM DISPONIBILIDAD d
             JOIN PRECIO pr ON d.id_disponibilidad = pr.id_disponibilidad
         WHERE
-            -- Condición 1: El período de disponibilidad está activo
             d.fecha_inicio <= CURDATE()
             AND (
                 d.fecha_fin IS NULL
                 OR d.fecha_fin >= CURDATE()
             )
-            -- Condición 2: El precio indica que es de alquiler (mayor a 0)
             AND pr.valor > 0
         GROUP BY
             d.id_pelicula, d.id_plataforma
-            -- Agrupa para asegurar que contamos películas distintas por plataforma
     ) AS t1 ON pl.id_plataforma = t1.id_plataforma
 GROUP BY
     pl.id_plataforma,
@@ -188,7 +183,7 @@ SELECT p.titulo, COALESCE(AVG(v.puntuacion), 0.0) AS Valoracion_Media
 FROM PELICULA p
     LEFT JOIN VALORACION v ON p.id_pelicula = v.id_pelicula
 WHERE
-    p.id_pelicula = 1 -- Cambia por el ID de la película
+    p.id_pelicula = 1 
 GROUP BY
     p.id_pelicula,
     p.titulo;
